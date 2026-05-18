@@ -973,27 +973,27 @@
         return;
       }
 
-      const isGoogleAppsScript = STORAGE_ENDPOINT.includes('script.google.com');
       const response = await fetch(STORAGE_ENDPOINT, {
         method: 'POST',
-        mode: isGoogleAppsScript ? 'no-cors' : 'cors',
+        mode: 'cors',
         headers: {
-          'Content-Type': isGoogleAppsScript ? 'text/plain;charset=utf-8' : 'application/json'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
       });
 
-      if (!isGoogleAppsScript && !response.ok) {
+      if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
 
+      status.style.color = 'rgba(255,255,255,.7)';
       status.textContent = 'Réponses enregistrées.';
       showThankYou();
     } catch (err) {
       console.error('Erreur envoi questionnaire:', err);
       downloadCsvFallback(payload);
+      status.style.color = '#ffd3bd';
       status.textContent = 'Erreur backend : un CSV local a été téléchargé pour éviter toute perte.';
-      showThankYou();
     } finally {
       submitBtn.disabled = false;
       submitBtn.style.opacity = '1';
