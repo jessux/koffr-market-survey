@@ -973,16 +973,17 @@
         return;
       }
 
+      const isGoogleAppsScript = STORAGE_ENDPOINT.includes('script.google.com');
       const response = await fetch(STORAGE_ENDPOINT, {
         method: 'POST',
-        mode: 'cors',
+        mode: isGoogleAppsScript ? 'no-cors' : 'cors',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': isGoogleAppsScript ? 'text/plain;charset=utf-8' : 'application/json'
         },
         body: JSON.stringify(payload)
       });
 
-      if (!response.ok) {
+      if (!isGoogleAppsScript && !response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
 
