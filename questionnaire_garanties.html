@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionnaire – Gestion de vos garanties matérielles</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1714;
+    --ink-soft: #5a5450;
+    --ink-ghost: #9e9891;
+    --cream: #faf7f2;
+    --cream-dark: #f0ece3;
+    --warm: #c8501a;
+    --warm-light: #f4ede5;
+    --green: #1d6b4e;
+    --border: #ddd8ce;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 56px 40px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: var(--warm);
+    border-radius: 50%;
+    opacity: .08;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 20%;
+    width: 200px; height: 200px;
+    background: var(--warm);
+    border-radius: 50%;
+    opacity: .05;
+  }
+  .header-inner { max-width: 680px; margin: 0 auto; position: relative; }
+  .header-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--warm);
+    background: rgba(200,80,26,.12);
+    border: 1px solid rgba(200,80,26,.25);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    color: #fff;
+  }
+  .header h1 em {
+    font-style: italic;
+    color: var(--warm);
+  }
+  .header-sub {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(250,247,242,.65);
+    max-width: 560px;
+  }
+  .header-meta {
+    margin-top: 28px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: rgba(250,247,242,.5);
+    font-weight: 400;
+  }
+  .meta-item span { font-size: 14px; }
+
+  /* PROGRESS */
+  .progress-bar {
+    background: var(--cream-dark);
+    height: 3px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--warm);
+    width: 0%;
+    transition: width .4s ease;
+  }
+
+  /* CONTENT */
+  .content { max-width: 680px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 48px;
+    animation: fadeUp .5s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(16px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  .section:nth-child(1) { animation-delay: .05s; }
+  .section:nth-child(2) { animation-delay: .10s; }
+  .section:nth-child(3) { animation-delay: .15s; }
+  .section:nth-child(4) { animation-delay: .20s; }
+  .section:nth-child(5) { animation-delay: .25s; }
+  .section:nth-child(6) { animation-delay: .30s; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .section-num {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  /* QUESTION */
+  .question { margin-bottom: 28px; }
+  .q-label {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+  .q-label sup {
+    color: var(--warm);
+    font-size: 12px;
+    margin-left: 2px;
+  }
+  .q-hint {
+    font-size: 12px;
+    color: var(--ink-ghost);
+    font-weight: 300;
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+
+  /* CHOICES */
+  .choices { display: flex; flex-direction: column; gap: 8px; }
+  .choice-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: #fff;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    transition: all .18s ease;
+    line-height: 1.45;
+  }
+  .choice-label:hover {
+    border-color: var(--warm);
+    color: var(--ink);
+    background: var(--warm-light);
+  }
+  .choice-label input { margin-top: 2px; accent-color: var(--warm); flex-shrink: 0; }
+  .choice-label.checked {
+    border-color: var(--warm);
+    background: var(--warm-light);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* CHOICES INLINE */
+  .choices-inline { display: flex; flex-wrap: wrap; gap: 8px; }
+  .choice-pill {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 14px;
+    border-radius: 40px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    transition: all .18s ease;
+  }
+  .choice-pill:hover, .choice-pill.checked {
+    border-color: var(--warm);
+    background: var(--warm-light);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .choice-pill input { accent-color: var(--warm); }
+
+  /* SCALE */
+  .scale-wrap { overflow-x: auto; padding-bottom: 4px; }
+  .scale {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink-ghost);
+    margin-bottom: 8px;
+  }
+  .scale-btn {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all .18s;
+    flex-shrink: 0;
+  }
+  .scale-btn:hover, .scale-btn.active {
+    border-color: var(--warm);
+    background: var(--warm);
+    color: #fff;
+  }
+
+  /* TEXT INPUT */
+  textarea, input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--ink);
+    resize: vertical;
+    transition: border-color .18s;
+    outline: none;
+  }
+  textarea:focus, input[type="text"]:focus, input[type="number"]:focus {
+    border-color: var(--warm);
+  }
+  textarea::placeholder, input::placeholder { color: var(--ink-ghost); }
+
+  /* SEPARATOR */
+  .sep {
+    border: none;
+    border-top: 1.5px dashed var(--border);
+    margin: 36px 0;
+  }
+
+  /* CONDITIONAL */
+  .conditional {
+    margin-top: 10px;
+    padding: 14px 16px;
+    background: var(--cream-dark);
+    border-radius: var(--radius);
+    border-left: 3px solid var(--warm);
+    display: none;
+  }
+  .conditional.visible { display: block; }
+  .conditional .q-label { font-size: 13px; }
+
+  /* SUBMIT */
+  .submit-zone {
+    margin-top: 48px;
+    padding: 32px;
+    background: var(--ink);
+    border-radius: 16px;
+    text-align: center;
+    color: #fff;
+  }
+  .submit-zone p {
+    font-size: 14px;
+    color: rgba(255,255,255,.5);
+    margin-bottom: 20px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--warm);
+    color: #fff;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 40px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .3px;
+  }
+  .btn-submit:hover { background: #a83e12; transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* THANK YOU */
+  .thankyou {
+    display: none;
+    text-align: center;
+    padding: 60px 24px;
+  }
+  .thankyou .icon { font-size: 48px; margin-bottom: 20px; }
+  .thankyou h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  .thankyou p { font-size: 15px; color: var(--ink-soft); line-height: 1.7; }
+  .thankyou.visible { display: block; }
+
+  /* UTILITY */
+  .required-note {
+    font-size: 12px;
+    color: var(--ink-ghost);
+    margin-bottom: 32px;
+    text-align: right;
+  }
+
+  @media (max-width: 480px) {
+    .header { padding: 40px 24px 36px; }
+    .scale-btn { width: 36px; height: 36px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-tag">Étude consommateurs · 2026</div>
+    <h1>Gérez-vous vos<br><em>garanties matérielles ?</em></h1>
+    <p class="header-sub">Ce questionnaire anonyme vise à mieux comprendre comment les particuliers gèrent leurs garanties, leurs justificatifs d'achat et leurs recours en cas de panne. Comptez environ 5 minutes.</p>
+    <div class="header-meta">
+      <div class="meta-item"><span>⏱</span> 5 minutes environ</div>
+      <div class="meta-item"><span>🔒</span> 100 % anonyme</div>
+      <div class="meta-item"><span>📋</span> 30 questions</div>
+    </div>
+  </div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="content">
+  <p class="required-note"><sup style="color:var(--warm)">*</sup> Question obligatoire</p>
+
+  <form id="surveyForm">
+
+    <!-- ───────────────────────────────────── 1. PROFIL -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div>
+          <div class="section-title">Votre profil</div>
+          <div class="section-desc">Quelques informations générales pour contextualiser les réponses.</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">1.1 Quelle est votre tranche d'âge ? <sup>*</sup></div>
+        <div class="choices-inline">
+          <label class="choice-pill"><input type="radio" name="age" value="18-24"> 18–24 ans</label>
+          <label class="choice-pill"><input type="radio" name="age" value="25-34"> 25–34 ans</label>
+          <label class="choice-pill"><input type="radio" name="age" value="35-49"> 35–49 ans</label>
+          <label class="choice-pill"><input type="radio" name="age" value="50-64"> 50–64 ans</label>
+          <label class="choice-pill"><input type="radio" name="age" value="65+"> 65 ans et +</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">1.2 Quelle est votre situation de logement ?</div>
+        <div class="choices-inline">
+          <label class="choice-pill"><input type="radio" name="logement" value="proprio"> Propriétaire</label>
+          <label class="choice-pill"><input type="radio" name="logement" value="locataire"> Locataire</label>
+          <label class="choice-pill"><input type="radio" name="logement" value="colocataire"> Colocataire</label>
+          <label class="choice-pill"><input type="radio" name="logement" value="famille"> Chez la famille</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">1.3 Combien de personnes vivent dans votre foyer (vous inclus) ?</div>
+        <div class="choices-inline">
+          <label class="choice-pill"><input type="radio" name="foyer" value="1"> 1</label>
+          <label class="choice-pill"><input type="radio" name="foyer" value="2"> 2</label>
+          <label class="choice-pill"><input type="radio" name="foyer" value="3-4"> 3–4</label>
+          <label class="choice-pill"><input type="radio" name="foyer" value="5+"> 5 et +</label>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- ───────────────────────────────────── 2. GESTION DES GARANTIES -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div>
+          <div class="section-title">Gestion actuelle de vos garanties</div>
+          <div class="section-desc">Comment vous organisez-vous aujourd'hui ?</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">2.1 Êtes-vous en général au courant de la durée des garanties de vos appareils ? <sup>*</sup></div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="conscience_garantie" value="toujours"> Oui, toujours — je connais les dates précises</label>
+          <label class="choice-label"><input type="radio" name="conscience_garantie" value="parfois"> En partie — je sais pour certains appareils seulement</label>
+          <label class="choice-label"><input type="radio" name="conscience_garantie" value="rarement"> Rarement — je découvre souvent que la garantie a expiré</label>
+          <label class="choice-label"><input type="radio" name="conscience_garantie" value="non"> Non, je ne suis jamais les garanties</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">2.2 Avez-vous déjà raté l'usage d'une garantie parce que vous n'aviez pas le justificatif ou que la date était dépassée ? <sup>*</sup></div>
+        <div class="choices-inline">
+          <label class="choice-pill"><input type="radio" name="rate_garantie" value="oui_plusieurs"> Oui, plusieurs fois</label>
+          <label class="choice-pill"><input type="radio" name="rate_garantie" value="oui_1"> Oui, une fois</label>
+          <label class="choice-pill"><input type="radio" name="rate_garantie" value="non_chance"> Non, mais de peu</label>
+          <label class="choice-pill"><input type="radio" name="rate_garantie" value="non"> Non, jamais</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">2.3 Sur quels types d'appareils suivez-vous le plus vos garanties ?</div>
+        <div class="q-hint">Plusieurs réponses possibles.</div>
+        <div class="choices">
+          <label class="choice-label"><input type="checkbox" name="appareils" value="smartphone"> Smartphones / tablettes</label>
+          <label class="choice-label"><input type="checkbox" name="appareils" value="informatique"> Ordinateurs, écrans</label>
+          <label class="choice-label"><input type="checkbox" name="appareils" value="electromenager_gros"> Gros électroménager (lave-linge, réfrigérateur…)</label>
+          <label class="choice-label"><input type="checkbox" name="appareils" value="electromenager_petit"> Petit électroménager (cafetière, aspirateur…)</label>
+          <label class="choice-label"><input type="checkbox" name="appareils" value="av"> Son & image (TV, enceintes…)</label>
+          <label class="choice-label"><input type="checkbox" name="appareils" value="outillage"> Outillage / bricolage</label>
+          <label class="choice-label"><input type="checkbox" name="appareils" value="aucun"> Aucun en particulier</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">2.4 Selon vous, pour combien d'appareils de votre foyer avez-vous une garantie encore en cours aujourd'hui ?</div>
+        <div class="choices-inline">
+          <label class="choice-pill"><input type="radio" name="nb_appareils" value="0"> 0</label>
+          <label class="choice-pill"><input type="radio" name="nb_appareils" value="1-3"> 1–3</label>
+          <label class="choice-pill"><input type="radio" name="nb_appareils" value="4-7"> 4–7</label>
+          <label class="choice-pill"><input type="radio" name="nb_appareils" value="8+"> 8 et +</label>
+          <label class="choice-pill"><input type="radio" name="nb_appareils" value="sais_pas"> Je ne sais pas</label>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- ───────────────────────────────────── 3. CONSERVATION DES JUSTIFICATIFS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div>
+          <div class="section-title">Conservation de vos justificatifs</div>
+          <div class="section-desc">Tickets de caisse, factures, bons de garantie…</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">3.1 Comment conservez-vous principalement vos preuves d'achat ? <sup>*</sup></div>
+        <div class="q-hint">Plusieurs réponses possibles.</div>
+        <div class="choices">
+          <label class="choice-label"><input type="checkbox" name="conservation_achat" value="tiroir"> En version papier dans un tiroir / classeur</label>
+          <label class="choice-label"><input type="checkbox" name="conservation_achat" value="photos"> En photo sur mon téléphone</label>
+          <label class="choice-label"><input type="checkbox" name="conservation_achat" value="mail"> Par e-mail (facture numérique du revendeur)</label>
+          <label class="choice-label"><input type="checkbox" name="conservation_achat" value="drive"> Sur un cloud / Google Drive / Dropbox</label>
+          <label class="choice-label"><input type="checkbox" name="conservation_achat" value="app"> Dans une application dédiée</label>
+          <label class="choice-label"><input type="checkbox" name="conservation_achat" value="rien"> Je ne les conserve pas</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">3.2 Lorsque vous avez besoin de retrouver une preuve d'achat pour un SAV, combien de temps cela vous prend-il en général ?</div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="temps_recherche" value="immediat"> Moins de 2 minutes — je sais toujours où c'est</label>
+          <label class="choice-label"><input type="radio" name="temps_recherche" value="quelques_min"> 5 à 15 minutes de recherches</label>
+          <label class="choice-label"><input type="radio" name="temps_recherche" value="long"> Plus de 15 minutes — c'est souvent le parcours du combattant</label>
+          <label class="choice-label"><input type="radio" name="temps_recherche" value="impossible"> Je ne retrouve généralement pas le document</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">3.3 Conservez-vous les manuels d'utilisation et certificats de garantie fournis à l'achat ?</div>
+        <div class="choices-inline">
+          <label class="choice-pill"><input type="radio" name="manuels" value="toujours"> Toujours</label>
+          <label class="choice-pill"><input type="radio" name="manuels" value="parfois"> Parfois</label>
+          <label class="choice-pill"><input type="radio" name="manuels" value="rarement"> Rarement</label>
+          <label class="choice-pill"><input type="radio" name="manuels" value="jamais"> Jamais</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">3.4 Conservez-vous les justificatifs de réparation (facture de réparateur, rapport technique) ? <sup>*</sup></div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="conservation_reparation" value="oui_toujours"> Oui, systématiquement</label>
+          <label class="choice-label"><input type="radio" name="conservation_reparation" value="oui_chers"> Oui, mais seulement pour les appareils chers</label>
+          <label class="choice-label"><input type="radio" name="conservation_reparation" value="parfois"> Parfois, si j'y pense</label>
+          <label class="choice-label"><input type="radio" name="conservation_reparation" value="non"> Non, jamais</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">3.5 Si vous conservez des justificatifs de réparation, sous quelle forme ?</div>
+        <div class="q-hint">Plusieurs réponses possibles.</div>
+        <div class="choices">
+          <label class="choice-label"><input type="checkbox" name="format_reparation" value="papier"> Papier</label>
+          <label class="choice-label"><input type="checkbox" name="format_reparation" value="photo"> Photo sur téléphone</label>
+          <label class="choice-label"><input type="checkbox" name="format_reparation" value="pdf"> PDF par e-mail ou cloud</label>
+          <label class="choice-label"><input type="checkbox" name="format_reparation" value="ne_concerne_pas"> Je n'ai pas eu de réparations</label>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- ───────────────────────────────────── 4. EN CAS DE PANNE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div>
+          <div class="section-title">Votre comportement en cas de panne</div>
+          <div class="section-desc">Comment réagissez-vous quand un appareil tombe en panne ?</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">4.1 Quelle est votre première réaction face à une panne ? <sup>*</sup></div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="premiere_reaction" value="garantie"> Je vérifie d'abord si l'appareil est encore sous garantie</label>
+          <label class="choice-label"><input type="radio" name="premiere_reaction" value="sav_direct"> Je contacte directement le SAV ou le revendeur</label>
+          <label class="choice-label"><input type="radio" name="premiere_reaction" value="web"> Je cherche sur internet (forum, YouTube, tutoriel)</label>
+          <label class="choice-label"><input type="radio" name="premiere_reaction" value="reparateur"> Je contacte un réparateur local</label>
+          <label class="choice-label"><input type="radio" name="premiere_reaction" value="remplacement"> J'envisage directement le remplacement</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">4.2 Avez-vous déjà souscrit une garantie étendue proposée par un revendeur ou un assureur ?</div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="garantie_etendue" value="oui_utilise" data-triggers="gar-ext"> Oui, et je l'ai déjà utilisée</label>
+          <label class="choice-label"><input type="radio" name="garantie_etendue" value="oui_pas_utilise" data-triggers="gar-ext"> Oui, mais je n'ai pas eu à l'utiliser</label>
+          <label class="choice-label"><input type="radio" name="garantie_etendue" value="non_voulu"> Non, je refuse systématiquement</label>
+          <label class="choice-label"><input type="radio" name="garantie_etendue" value="non_oubli"> Non, j'y pense rarement au moment de l'achat</label>
+        </div>
+        <div class="conditional" id="gar-ext">
+          <div class="q-label">Avez-vous trouvé le processus de déclaration et de remboursement facile ?</div>
+          <div class="choices-inline">
+            <label class="choice-pill"><input type="radio" name="facilite_gar_ext" value="tres_facile"> Très facile</label>
+            <label class="choice-pill"><input type="radio" name="facilite_gar_ext" value="moyen"> Moyen</label>
+            <label class="choice-pill"><input type="radio" name="facilite_gar_ext" value="difficile"> Difficile</label>
+            <label class="choice-pill"><input type="radio" name="facilite_gar_ext" value="tres_difficile"> Très difficile</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">4.3 Saviez-vous que certaines cartes bancaires haut de gamme (Visa Premier, Gold Mastercard…) incluent une extension de garantie constructeur pouvant aller jusqu'à 3 ans sur vos appareils ?</div>
+        <div class="q-hint">Cette couverture figure dans la notice d'information de votre carte et s'active si l'achat a été réglé intégralement avec celle-ci.</div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="carte_bancaire" value="oui_utilise"> Oui, et je l'ai déjà utilisée avec succès</label>
+          <label class="choice-label"><input type="radio" name="carte_bancaire" value="oui_pas"> Oui, je le savais mais je n'en ai jamais eu besoin</label>
+          <label class="choice-label"><input type="radio" name="carte_bancaire" value="oui_flou"> J'en avais entendu parler, mais je ne savais pas que ça pouvait aller jusqu'à 3 ans</label>
+          <label class="choice-label"><input type="radio" name="carte_bancaire" value="non"> Non, je l'ignorais complètement</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">4.4 Face à une panne hors garantie, quelle est votre décision habituelle pour les appareils de valeur (> 200 €) ?</div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="hors_garantie" value="repare_agree"> Je fais réparer par un réparateur agréé ou officiel</label>
+          <label class="choice-label"><input type="radio" name="hors_garantie" value="repare_tiers"> Je fais réparer par un réparateur tiers (moins cher)</label>
+          <label class="choice-label"><input type="radio" name="hors_garantie" value="self_repair"> Je tente de réparer moi-même (pièces détachées, tutoriels)</label>
+          <label class="choice-label"><input type="radio" name="hors_garantie" value="remplace"> Je remplace l'appareil</label>
+          <label class="choice-label"><input type="radio" name="hors_garantie" value="ca_depend"> Ça dépend du coût estimé de la réparation</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">4.5 À quel niveau estimez-vous votre maîtrise de la législation sur les garanties légales en France ? <sup>*</sup></div>
+        <div class="scale-labels"><span>Aucune connaissance</span><span>Expert</span></div>
+        <div class="scale-wrap">
+          <div class="scale" id="scale-loi">
+            <button type="button" class="scale-btn" data-name="connaissance_loi" data-val="1">1</button>
+            <button type="button" class="scale-btn" data-name="connaissance_loi" data-val="2">2</button>
+            <button type="button" class="scale-btn" data-name="connaissance_loi" data-val="3">3</button>
+            <button type="button" class="scale-btn" data-name="connaissance_loi" data-val="4">4</button>
+            <button type="button" class="scale-btn" data-name="connaissance_loi" data-val="5">5</button>
+          </div>
+        </div>
+        <input type="hidden" name="connaissance_loi" id="val-connaissance_loi">
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- ───────────────────────────────────── 5. INTÉRÊT APPLICATION -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div>
+          <div class="section-title">Intérêt pour une application dédiée</div>
+          <div class="section-desc">Seriez-vous prêt à utiliser un outil numérique pour gérer tout ça ?</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">5.1 Utilisez-vous actuellement une application ou un outil numérique pour gérer vos garanties ou vos documents importants ? <sup>*</sup></div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="utilise_outil" value="oui_ded" data-triggers="outil-actuel"> Oui, une application spécialisée (précisez ci-dessous)</label>
+          <label class="choice-label"><input type="radio" name="utilise_outil" value="oui_gen"> Oui, un outil généraliste (Google Drive, Notes…)</label>
+          <label class="choice-label"><input type="radio" name="utilise_outil" value="non"> Non, je gère ça manuellement</label>
+          <label class="choice-label"><input type="radio" name="utilise_outil" value="rien"> Non, je ne gère pas du tout</label>
+        </div>
+        <div class="conditional" id="outil-actuel">
+          <div class="q-label">Quelle application utilisez-vous ?</div>
+          <input type="text" name="outil_actuel_nom" placeholder="Nom de l'application…">
+          <div class="q-label" style="margin-top:10px;">En êtes-vous satisfait(e) ?</div>
+          <div class="choices-inline" style="margin-top:6px;">
+            <label class="choice-pill"><input type="radio" name="satis_outil" value="tres"> Très satisfait(e)</label>
+            <label class="choice-pill"><input type="radio" name="satis_outil" value="plutot"> Plutôt satisfait(e)</label>
+            <label class="choice-pill"><input type="radio" name="satis_outil" value="moy"> Moyen</label>
+            <label class="choice-pill"><input type="radio" name="satis_outil" value="peu"> Peu satisfait(e)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">5.2 À quel point seriez-vous intéressé(e) par une application dédiée à la gestion de vos garanties et de vos documents SAV ? <sup>*</sup></div>
+        <div class="scale-labels"><span>Pas du tout intéressé(e)</span><span>Très intéressé(e)</span></div>
+        <div class="scale-wrap">
+          <div class="scale" id="scale-interet">
+            <button type="button" class="scale-btn" data-name="interet_app" data-val="1">1</button>
+            <button type="button" class="scale-btn" data-name="interet_app" data-val="2">2</button>
+            <button type="button" class="scale-btn" data-name="interet_app" data-val="3">3</button>
+            <button type="button" class="scale-btn" data-name="interet_app" data-val="4">4</button>
+            <button type="button" class="scale-btn" data-name="interet_app" data-val="5">5</button>
+          </div>
+        </div>
+        <input type="hidden" name="interet_app" id="val-interet_app">
+      </div>
+
+      <div class="question">
+        <div class="q-label">5.3 Quel mode de tarification vous semblerait le plus acceptable pour une telle application ? <sup>*</sup></div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="tarification" value="gratuit"> Gratuite (avec des fonctionnalités limitées)</label>
+          <label class="choice-label"><input type="radio" name="tarification" value="achat_unique"> Achat unique (payer une fois, utiliser à vie)</label>
+          <label class="choice-label"><input type="radio" name="tarification" value="abo_mensuel"> Abonnement mensuel</label>
+          <label class="choice-label"><input type="radio" name="tarification" value="abo_annuel"> Abonnement annuel (moins cher que mensuel)</label>
+          <label class="choice-label"><input type="radio" name="tarification" value="freemium"> Freemium : gratuit avec options payantes à la carte</label>
+          <label class="choice-label"><input type="radio" name="tarification" value="non_paye"> Je ne paierais pas pour cela</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">5.4 Quel montant seriez-vous prêt(e) à investir pour une application de qualité ?</div>
+        <div class="q-hint">Indiquez le montant que vous jugez raisonnable selon le mode choisi ci-dessus.</div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="budget" value="0"> 0 € — je ne paierais pas</label>
+          <label class="choice-label"><input type="radio" name="budget" value="1-2_mois"> 1 à 2 € / mois (ou ~12–20 € / an)</label>
+          <label class="choice-label"><input type="radio" name="budget" value="3-5_mois"> 3 à 5 € / mois (ou ~30–50 € / an)</label>
+          <label class="choice-label"><input type="radio" name="budget" value="5-10_mois"> 5 à 10 € / mois (ou ~50–100 € / an)</label>
+          <label class="choice-label"><input type="radio" name="budget" value="achat_5-15"> 5 à 15 € en achat unique</label>
+          <label class="choice-label"><input type="radio" name="budget" value="achat_15-30"> 15 à 30 € en achat unique</label>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- ───────────────────────────────────── 6. FONCTIONNALITÉS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div>
+          <div class="section-title">Fonctionnalités souhaitées</div>
+          <div class="section-desc">Qu'attendriez-vous d'une telle application ?</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">6.1 Parmi ces fonctionnalités, lesquelles vous semblent <strong>indispensables</strong> ? <sup>*</sup></div>
+        <div class="q-hint">Cochez tout ce qui s'applique.</div>
+        <div class="choices">
+          <label class="choice-label"><input type="checkbox" name="fonc_indispensable" value="scan_facture"> Scan et OCR automatique des tickets de caisse et factures</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_indispensable" value="alerte_expiration"> Alertes avant expiration de garantie</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_indispensable" value="inventaire"> Inventaire centralisé de tous mes appareils</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_indispensable" value="contacts_sav"> Accès direct aux coordonnées du SAV agréé</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_indispensable" value="dossier_sav"> Constitution automatique d'un dossier SAV prêt à envoyer</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_indispensable" value="stock_reparation"> Stockage des rapports et factures de réparation</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_indispensable" value="garantie_cb"> Vérification de la garantie carte bancaire applicable</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_indispensable" value="cloud_sync"> Synchronisation cloud multi-appareils</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_indispensable" value="partage_foyer"> Partage du compte avec les membres du foyer</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">6.2 Parmi ces fonctionnalités avancées, lesquelles vous intéresseraient ?</div>
+        <div class="q-hint">Plusieurs réponses possibles.</div>
+        <div class="choices">
+          <label class="choice-label"><input type="checkbox" name="fonc_avancees" value="ia_conseil"> Assistant IA pour orienter vers le bon interlocuteur SAV</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_avancees" value="comparateur"> Comparateur de garanties étendues au moment de l'achat</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_avancees" value="bonus_reparation"> Information sur le bonus réparation applicable</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_avancees" value="mediation"> Aide à la constitution d'un dossier de médiation consommateur</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_avancees" value="cote_revente"> Estimation de la côte de revente de l'appareil</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_avancees" value="empreinte"> Suivi de l'empreinte environnementale du foyer</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_avancees" value="push_rappel"> Rappels push personnalisés</label>
+          <label class="choice-label"><input type="checkbox" name="fonc_avancees" value="widget"> Widget sur l'écran d'accueil du téléphone</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">6.3 Classez par ordre d'importance vos 3 fonctionnalités prioritaires.</div>
+        <div class="q-hint">Numérotez de 1 (la plus importante) à 3 dans les champs ci-dessous.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="number" name="prio1" min="1" max="3" style="width:60px;" placeholder="1">
+            <span style="font-size:13px;color:var(--ink-soft);">Alerte avant expiration</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="number" name="prio2" min="1" max="3" style="width:60px;" placeholder="2">
+            <span style="font-size:13px;color:var(--ink-soft);">Scan automatique des factures</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="number" name="prio3" min="1" max="3" style="width:60px;" placeholder="3">
+            <span style="font-size:13px;color:var(--ink-soft);">Dossier SAV prêt à envoyer</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">6.4 Sur quel(s) support(s) utiliseriez-vous principalement cette application ?</div>
+        <div class="choices-inline">
+          <label class="choice-pill"><input type="checkbox" name="support" value="ios"> iPhone (iOS)</label>
+          <label class="choice-pill"><input type="checkbox" name="support" value="android"> Android</label>
+          <label class="choice-pill"><input type="checkbox" name="support" value="web"> Navigateur web</label>
+          <label class="choice-pill"><input type="checkbox" name="support" value="indifferent"> Indifférent</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">6.5 Y a-t-il un frein principal qui vous empêcherait d'adopter une telle application ?</div>
+        <div class="choices">
+          <label class="choice-label"><input type="radio" name="frein" value="vie_privee"> La protection de mes données personnelles / vie privée</label>
+          <label class="choice-label"><input type="radio" name="frein" value="prix"> Le prix</label>
+          <label class="choice-label"><input type="radio" name="frein" value="habitude"> La difficulté à changer mes habitudes</label>
+          <label class="choice-label"><input type="radio" name="frein" value="complexite"> La crainte que ce soit trop complexe à utiliser</label>
+          <label class="choice-label"><input type="radio" name="frein" value="confiance"> Le manque de confiance dans la pérennité du service</label>
+          <label class="choice-label"><input type="radio" name="frein" value="aucun"> Aucun frein particulier</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">6.6 Avez-vous des remarques, des attentes spécifiques ou des suggestions ?</div>
+        <textarea name="commentaire_libre" rows="4" placeholder="Vos idées sont précieuses…"></textarea>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-zone">
+      <p>Merci d'avoir pris le temps de répondre à ce questionnaire.<br>Vos retours nous aident directement à concevoir un meilleur service.</p>
+      <button type="submit" class="btn-submit">
+        <span>Envoyer mes réponses</span>
+        <span>→</span>
+      </button>
+      <p id="submitStatus" style="margin-top:12px;margin-bottom:0;color:rgba(255,255,255,.7);font-size:12px;"></p>
+    </div>
+
+  </form>
+
+  <!-- THANK YOU -->
+  <div class="thankyou" id="thankyou">
+    <div class="icon">🎉</div>
+    <h2>Merci beaucoup !</h2>
+    <p>Vos réponses ont bien été enregistrées.<br>Elles contribueront directement à l'amélioration de nos services.<br><br>
+    <span style="color:var(--warm);font-weight:500;">Restez connecté(e) — nous reviendrons vers vous avec les résultats de l'étude.</span></p>
+  </div>
+
+</div>
+
+<script>
+  // URL du backend (Google Apps Script, Cloudflare Worker, etc.).
+  // Laissez vide pendant le design/local, puis remplacez avant publication.
+  const STORAGE_ENDPOINT = '';
+
+  function escapeCsvValue(value) {
+    const raw = String(value ?? '');
+    if (raw.includes('"') || raw.includes(',') || raw.includes('\n')) {
+      return `"${raw.replace(/"/g, '""')}"`;
+    }
+    return raw;
+  }
+
+  function buildCsvRow(record, orderedKeys) {
+    return orderedKeys.map(key => escapeCsvValue(record[key] ?? '')).join(',');
+  }
+
+  function downloadCsvFallback(payload) {
+    const orderedKeys = Object.keys(payload);
+    const header = orderedKeys.map(escapeCsvValue).join(',');
+    const row = buildCsvRow(payload, orderedKeys);
+    const csvContent = `${header}\n${row}`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reponse-questionnaire-${Date.now()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  function collectSurveyData(form) {
+    const formData = new FormData(form);
+    const payload = {
+      submitted_at: new Date().toISOString(),
+      user_agent: navigator.userAgent
+    };
+
+    for (const [key, value] of formData.entries()) {
+      if (Object.prototype.hasOwnProperty.call(payload, key)) {
+        payload[key] = `${payload[key]} | ${value}`;
+      } else {
+        payload[key] = value;
+      }
+    }
+
+    return payload;
+  }
+
+  function showThankYou() {
+    document.getElementById('surveyForm').style.display = 'none';
+    document.getElementById('thankyou').classList.add('visible');
+    document.getElementById('progressFill').style.width = '100%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // --- Pill / choice interactions ---
+  document.querySelectorAll('.choice-label, .choice-pill').forEach(label => {
+    const input = label.querySelector('input');
+    if (!input) return;
+
+    const updateClass = () => {
+      if (input.type === 'radio') {
+        const siblings = document.querySelectorAll(`input[name="${input.name}"]`);
+        siblings.forEach(s => s.closest('.choice-label, .choice-pill')?.classList.remove('checked'));
+      }
+      label.classList.toggle('checked', input.checked);
+
+      // Handle conditionals
+      const triggers = input.dataset.triggers;
+      if (triggers && input.checked) {
+        document.querySelectorAll('.conditional').forEach(c => {
+          if (input.type === 'radio') {
+            const allRelated = document.querySelectorAll(`input[name="${input.name}"]`);
+            allRelated.forEach(r => {
+              if (r.dataset.triggers) {
+                document.getElementById(r.dataset.triggers)?.classList.remove('visible');
+              }
+            });
+          }
+          document.getElementById(triggers)?.classList.add('visible');
+        });
+      } else if (input.type === 'radio') {
+        const allRelated = document.querySelectorAll(`input[name="${input.name}"]`);
+        allRelated.forEach(r => {
+          if (r.dataset.triggers && !r.checked) {
+            document.getElementById(r.dataset.triggers)?.classList.remove('visible');
+          }
+        });
+      }
+
+      updateProgress();
+    };
+
+    input.addEventListener('change', updateClass);
+  });
+
+  // --- Scale buttons ---
+  document.querySelectorAll('.scale-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.dataset.name;
+      document.querySelectorAll(`.scale-btn[data-name="${name}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`val-${name}`).value = btn.dataset.val;
+      updateProgress();
+    });
+  });
+
+  // --- Progress ---
+  function updateProgress() {
+    const required = document.querySelectorAll('input[type="radio"][required], input[type="radio"]');
+    const groups = new Set();
+    const checkedGroups = new Set();
+    document.querySelectorAll('input[type="radio"]').forEach(r => groups.add(r.name));
+    document.querySelectorAll('input[type="radio"]:checked').forEach(r => checkedGroups.add(r.name));
+    const pct = Math.min(100, Math.round((checkedGroups.size / groups.size) * 100));
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  // --- Submit ---
+  document.getElementById('surveyForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = document.getElementById('surveyForm');
+    const submitBtn = form.querySelector('.btn-submit');
+    const status = document.getElementById('submitStatus');
+    const payload = collectSurveyData(form);
+
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.7';
+    submitBtn.style.cursor = 'not-allowed';
+    status.textContent = 'Envoi en cours...';
+
+    try {
+      if (!STORAGE_ENDPOINT.trim()) {
+        downloadCsvFallback(payload);
+        status.textContent = 'Aucun backend configuré : un CSV local a été téléchargé.';
+        showThankYou();
+        return;
+      }
+
+      const isGoogleAppsScript = STORAGE_ENDPOINT.includes('script.google.com');
+      const response = await fetch(STORAGE_ENDPOINT, {
+        method: 'POST',
+        mode: isGoogleAppsScript ? 'no-cors' : 'cors',
+        headers: {
+          'Content-Type': isGoogleAppsScript ? 'text/plain;charset=utf-8' : 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!isGoogleAppsScript && !response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      status.textContent = 'Réponses enregistrées.';
+      showThankYou();
+    } catch (err) {
+      console.error('Erreur envoi questionnaire:', err);
+      downloadCsvFallback(payload);
+      status.textContent = 'Erreur backend : un CSV local a été téléchargé pour éviter toute perte.';
+      showThankYou();
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+      submitBtn.style.cursor = 'pointer';
+    }
+  });
+</script>
+</body>
+</html>
