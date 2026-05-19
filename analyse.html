@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koffr – Analyse des réponses</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1714;
+    --ink-soft: #5a5450;
+    --ink-ghost: #9e9891;
+    --cream: #faf7f2;
+    --cream-dark: #f0ece3;
+    --warm: #c8501a;
+    --warm-light: #f4ede5;
+    --green: #1d6b4e;
+    --green-light: #e8f4ee;
+    --blue: #1a4d8f;
+    --blue-light: #e8f0fa;
+    --border: #ddd8ce;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 56px 40px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: var(--warm);
+    border-radius: 50%;
+    opacity: .08;
+  }
+  .header-inner { max-width: 1200px; margin: 0 auto; position: relative; }
+  .header-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--warm);
+    background: rgba(200,80,26,.12);
+    border: 1px solid rgba(200,80,26,.25);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+  .header h1 em { font-style: italic; color: var(--warm); }
+  .header-sub {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(250,247,242,.6);
+  }
+
+  /* CONTENT */
+  .content { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* KPI GRID */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  .kpi-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 18px;
+  }
+  .kpi-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--warm);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .kpi-label {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  /* SECTION */
+  .section { margin-bottom: 48px; }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    flex-shrink: 0;
+  }
+
+  /* ANALYSIS GRID */
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .analysis-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .analysis-card-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink-ghost);
+    margin-bottom: 14px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .bar-label { flex: 0 0 160px; color: var(--ink-soft); font-size: 12.5px; }
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--cream-dark);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--warm);
+    transition: width .4s ease;
+  }
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.blue  { background: var(--blue); }
+  .bar-count {
+    flex: 0 0 36px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--ink-ghost);
+    font-weight: 500;
+  }
+
+  /* INSIGHT BOX */
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  .insight {
+    background: var(--warm-light);
+    border: 1.5px solid rgba(200,80,26,.2);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .insight.green {
+    background: var(--green-light);
+    border-color: rgba(29,107,78,.2);
+  }
+  .insight.blue {
+    background: var(--blue-light);
+    border-color: rgba(26,77,143,.2);
+  }
+  .insight-icon { font-size: 20px; margin-bottom: 8px; }
+  .insight-title { font-weight: 600; font-size: 13px; color: var(--ink); margin-bottom: 4px; }
+  .insight-text { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; }
+
+  /* FEATURE GRID */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 640px) { .feat-grid { grid-template-columns: 1fr; } }
+
+  /* TABLE */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    min-width: 900px;
+  }
+  thead {
+    background: var(--ink);
+    color: #fff;
+    position: sticky;
+    top: 0;
+  }
+  thead th {
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: .5px;
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  tbody tr:hover { background: var(--warm-light); }
+  tbody tr:last-child { border-bottom: none; }
+  td {
+    padding: 10px 10px;
+    vertical-align: top;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  td:first-child { color: var(--ink); font-weight: 500; }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-warm { background: var(--warm-light); color: var(--warm); border: 1px solid rgba(200,80,26,.2); }
+  .badge-green { background: var(--green-light); color: var(--green); border: 1px solid rgba(29,107,78,.2); }
+  .badge-gray  { background: var(--cream-dark); color: var(--ink-soft); border: 1px solid var(--border); }
+  .badge-blue  { background: var(--blue-light); color: var(--blue); border: 1px solid rgba(26,77,143,.2); }
+
+  /* STARS */
+  .stars { color: var(--warm); letter-spacing: 1px; font-size: 12px; }
+  .stars .off { color: var(--border); }
+
+  /* TAG LIST */
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    background: var(--cream-dark);
+    border-radius: 4px;
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .tag.hot { background: var(--warm-light); color: var(--warm); }
+
+  /* PRIORITY PILLS */
+  .prio-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+  .prio-pill {
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+  .prio-1 { background: #fff3e0; color: #e65100; }
+  .prio-2 { background: #e8f4ee; color: #1d6b4e; }
+  .prio-3 { background: #e8f0fa; color: #1a4d8f; }
+
+  .comment-cell {
+    font-style: italic;
+    font-size: 11.5px;
+    color: var(--ink-ghost);
+    max-width: 180px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-tag">Étude de marché — Mai 2026</div>
+    <h1>Analyse des <em>réponses</em></h1>
+    <p class="header-sub">Questionnaire Koffr — Gestion des garanties · 14 répondants · 18–19 mai 2026</p>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value">14</div>
+      <div class="kpi-label">Répondants au total</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">3,5<span style="font-size:18px;color:var(--ink-ghost)">/5</span></div>
+      <div class="kpi-label">Score d'intérêt moyen pour l'app</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">43%</div>
+      <div class="kpi-label">Très intéressés (score 5/5)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">86%</div>
+      <div class="kpi-label">Propriétaires de leur logement</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">57%</div>
+      <div class="kpi-label">Ont du mal à retrouver leurs docs (long/impossible)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">79%</div>
+      <div class="kpi-label">Utilisateurs iPhone (iOS)</div>
+    </div>
+  </div>
+
+  <!-- PROFIL -->
+  <div class="section">
+    <div class="section-title"><span class="num">1</span> Profil des répondants</div>
+    <div class="analysis-grid">
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Tranche d'âge</div>
+        <div class="bar-row">
+          <div class="bar-label">18–24 ans</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">25–34 ans</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">35–49 ans</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">50–64 ans</div>
+          <div class="bar-track"><div class="bar-fill" style="width:43%"></div></div>
+          <div class="bar-count">6</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Taille du foyer</div>
+        <div class="bar-row">
+          <div class="bar-label">1 personne</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">2 personnes</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:50%"></div></div>
+          <div class="bar-count">7</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">3–4 personnes</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">5+ personnes</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Connaissance de la loi consommateur</div>
+        <div class="bar-row">
+          <div class="bar-label">Peu ou pas connue</div>
+          <div class="bar-track"><div class="bar-fill" style="width:57%"></div></div>
+          <div class="bar-count">8</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Connue en partie</div>
+          <div class="bar-track"><div class="bar-fill" style="width:29%"></div></div>
+          <div class="bar-count">4</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Bien connue</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Plateforme utilisée pour répondre</div>
+        <div class="bar-row">
+          <div class="bar-label">iPhone (iOS)</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:79%"></div></div>
+          <div class="bar-count">11</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Android</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Windows (desktop)</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- COMPORTEMENTS -->
+  <div class="section">
+    <div class="section-title"><span class="num">2</span> Comportements autour des garanties</div>
+    <div class="analysis-grid">
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Conscience d'être sous garantie</div>
+        <div class="bar-row">
+          <div class="bar-label">Non / jamais</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50%"></div></div>
+          <div class="bar-count">7</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Rarement</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Parfois</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Appareils avec une garantie active</div>
+        <div class="bar-row">
+          <div class="bar-label">Plusieurs appareils</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:57%"></div></div>
+          <div class="bar-count">8</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Un seul</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Non / pas sûr</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Où sont conservés les justificatifs d'achat ?</div>
+        <div class="bar-row">
+          <div class="bar-label">Tiroir / physique</div>
+          <div class="bar-track"><div class="bar-fill" style="width:86%"></div></div>
+          <div class="bar-count">12</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Email</div>
+          <div class="bar-track"><div class="bar-fill" style="width:64%"></div></div>
+          <div class="bar-count">9</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Drive / cloud</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Photos / galerie</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Rien / perdu</div>
+          <div class="bar-track"><div class="bar-fill" style="width:21%"></div></div>
+          <div class="bar-count">3</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Temps pour retrouver un justificatif</div>
+        <div class="bar-row">
+          <div class="bar-label">Immédiatement</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:21%"></div></div>
+          <div class="bar-count">3</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Quelques minutes</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Long</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Impossible</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Réaction face à une panne</div>
+        <div class="bar-row">
+          <div class="bar-label">Cherche la garantie</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Cherche sur le web</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Appelle le SAV direct</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Va chez un réparateur</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Cherche à remplacer</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Hors garantie : que font-ils ?</div>
+        <div class="bar-row">
+          <div class="bar-label">Répare soi-même</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Ça dépend</div>
+          <div class="bar-track"><div class="bar-fill" style="width:29%"></div></div>
+          <div class="bar-count">4</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Réparateur agréé</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Réparateur tiers</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Remplace / rien</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GARANTIES ÉTENDUES & CB -->
+  <div class="section">
+    <div class="section-title"><span class="num">3</span> Garanties étendues &amp; carte bancaire</div>
+    <div class="analysis-grid">
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Garantie étendue souscrite ?</div>
+        <div class="bar-row">
+          <div class="bar-label">Oui, et utilisée</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:21%"></div></div>
+          <div class="bar-count">3</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Oui, jamais utilisée</div>
+          <div class="bar-track"><div class="bar-fill" style="width:29%"></div></div>
+          <div class="bar-count">4</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Non — oubli</div>
+          <div class="bar-track"><div class="bar-fill" style="width:29%"></div></div>
+          <div class="bar-count">4</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Non — pas voulu</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Remplace / pas de chance</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Facilité d'utiliser la garantie étendue</div>
+        <div class="q-hint" style="font-size:11.5px;color:var(--ink-ghost);margin-bottom:10px;font-style:italic;">(parmi ceux qui en ont une — 7 répondants)</div>
+        <div class="bar-row">
+          <div class="bar-label">Très facile</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:14%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Moyen / flou</div>
+          <div class="bar-track"><div class="bar-fill" style="width:71%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Difficile</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Connaissance garantie carte bancaire</div>
+        <div class="bar-row">
+          <div class="bar-label">Oui, vaguement</div>
+          <div class="bar-track"><div class="bar-fill" style="width:57%"></div></div>
+          <div class="bar-count">8</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Oui, mais pas utilisé</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Non</div>
+          <div class="bar-track"><div class="bar-fill" style="width:29%"></div></div>
+          <div class="bar-count">4</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FONCTIONNALITÉS -->
+  <div class="section">
+    <div class="section-title"><span class="num">4</span> Fonctionnalités souhaitées</div>
+
+    <div class="feat-grid">
+      <div class="analysis-card">
+        <div class="analysis-card-title">Fonctionnalités indispensables (citées N fois / 14)</div>
+        <div class="bar-row">
+          <div class="bar-label">Inventaire appareils</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:100%"></div></div>
+          <div class="bar-count">14</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Alerte expiration</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:93%"></div></div>
+          <div class="bar-count">13</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Scan facture</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:86%"></div></div>
+          <div class="bar-count">12</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Stock pièces / réparation</div>
+          <div class="bar-track"><div class="bar-fill" style="width:79%"></div></div>
+          <div class="bar-count">11</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Garantie CB intégrée</div>
+          <div class="bar-track"><div class="bar-fill" style="width:79%"></div></div>
+          <div class="bar-count">11</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Partage foyer</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50%"></div></div>
+          <div class="bar-count">7</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Dossier SAV</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50%"></div></div>
+          <div class="bar-count">7</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Sync cloud</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:43%"></div></div>
+          <div class="bar-count">6</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Contacts SAV</div>
+          <div class="bar-track"><div class="bar-fill" style="width:43%"></div></div>
+          <div class="bar-count">6</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Fonctionnalités avancées (citées N fois / 14)</div>
+        <div class="bar-row">
+          <div class="bar-label">Conseil IA / SAV</div>
+          <div class="bar-track"><div class="bar-fill" style="width:71%"></div></div>
+          <div class="bar-count">10</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Comparateur garanties</div>
+          <div class="bar-track"><div class="bar-fill" style="width:64%"></div></div>
+          <div class="bar-count">9</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Bonus réparation</div>
+          <div class="bar-track"><div class="bar-fill" style="width:64%"></div></div>
+          <div class="bar-count">9</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Côte de revente</div>
+          <div class="bar-track"><div class="bar-fill" style="width:43%"></div></div>
+          <div class="bar-count">6</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Rappels push</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Widget écran d'accueil</div>
+          <div class="bar-track"><div class="bar-fill" style="width:29%"></div></div>
+          <div class="bar-count">4</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Médiation consommateur</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Empreinte environnementale</div>
+          <div class="bar-track"><div class="bar-fill" style="width:21%"></div></div>
+          <div class="bar-count">3</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-card" style="margin-bottom:24px;">
+      <div class="analysis-card-title">Classement des 3 fonctionnalités prioritaires — score moyen (1 = le plus important)</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;">
+        <div style="flex:1;min-width:200px;padding:16px;background:var(--warm-light);border-radius:8px;border:1.5px solid rgba(200,80,26,.2);text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:var(--warm);font-family:'Playfair Display',serif;">1,58</div>
+          <div style="font-size:13px;font-weight:500;color:var(--ink);margin-top:4px;">Scan automatique factures</div>
+          <div style="font-size:11px;color:var(--ink-ghost);margin-top:2px;">Rang moyen le plus bas = priorité n°1</div>
+        </div>
+        <div style="flex:1;min-width:200px;padding:16px;background:var(--green-light);border-radius:8px;border:1.5px solid rgba(29,107,78,.2);text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:var(--green);font-family:'Playfair Display',serif;">1,67</div>
+          <div style="font-size:13px;font-weight:500;color:var(--ink);margin-top:4px;">Alerte avant expiration</div>
+          <div style="font-size:11px;color:var(--ink-ghost);margin-top:2px;">Priorité n°2 très proche</div>
+        </div>
+        <div style="flex:1;min-width:200px;padding:16px;background:var(--blue-light);border-radius:8px;border:1.5px solid rgba(26,77,143,.2);text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:var(--blue);font-family:'Playfair Display',serif;">2,75</div>
+          <div style="font-size:13px;font-weight:500;color:var(--ink);margin-top:4px;">Dossier SAV prêt à envoyer</div>
+          <div style="font-size:11px;color:var(--ink-ghost);margin-top:2px;">Priorité n°3 — moins urgent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONÉTISATION -->
+  <div class="section">
+    <div class="section-title"><span class="num">5</span> Monétisation &amp; freins</div>
+    <div class="analysis-grid">
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Modèle tarifaire accepté</div>
+        <div class="bar-row">
+          <div class="bar-label">Gratuit uniquement</div>
+          <div class="bar-track"><div class="bar-fill" style="width:64%"></div></div>
+          <div class="bar-count">9</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Freemium</div>
+          <div class="bar-track"><div class="bar-fill" style="width:21%"></div></div>
+          <div class="bar-count">3</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Abonnement mensuel</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Freins à l'adoption</div>
+        <div class="bar-row">
+          <div class="bar-label">Le prix</div>
+          <div class="bar-track"><div class="bar-fill" style="width:79%"></div></div>
+          <div class="bar-count">11</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Complexité d'usage</div>
+          <div class="bar-track"><div class="bar-fill" style="width:50%"></div></div>
+          <div class="bar-count">7</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Vie privée / données</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Confiance / pérennité</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Habitudes</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Aucun frein</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:7%"></div></div>
+          <div class="bar-count">1</div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Support souhaité pour l'app</div>
+        <div class="bar-row">
+          <div class="bar-label">iPhone (iOS)</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:79%"></div></div>
+          <div class="bar-count">11</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Navigateur web</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%"></div></div>
+          <div class="bar-count">5</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Android</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"></div></div>
+          <div class="bar-count">2</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="section">
+    <div class="section-title"><span class="num">6</span> Insights clés</div>
+    <div class="insight-grid">
+      <div class="insight">
+        <div class="insight-icon">📦</div>
+        <div class="insight-title">Le tiroir reste la norme</div>
+        <div class="insight-text">86% conservent encore leurs justificatifs dans un tiroir physique. Le passage au numérique est une vraie opportunité de friction à réduire.</div>
+      </div>
+      <div class="insight green">
+        <div class="insight-icon">⏱</div>
+        <div class="insight-title">Urgence du scan automatique</div>
+        <div class="insight-text">Le scan facture est la fonctionnalité prioritaire n°1 (rang moyen 1,58). Couplé à l'inventaire (100% de demande), c'est le cœur du MVP.</div>
+      </div>
+      <div class="insight blue">
+        <div class="insight-icon">💳</div>
+        <div class="insight-title">La garantie CB est mal connue</div>
+        <div class="insight-text">57% en ont entendu parler vaguement, 29% ne la connaissent pas. Un fort potentiel de valeur ajoutée pour l'application.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-icon">📱</div>
+        <div class="insight-title">iOS en premier, web ensuite</div>
+        <div class="insight-text">79% utiliseraient l'app sur iPhone. Une PWA ou une version web serait utile pour 36% comme second accès (desktop).</div>
+      </div>
+      <div class="insight green">
+        <div class="insight-icon">🤝</div>
+        <div class="insight-title">Le foyer comme unité d'usage</div>
+        <div class="insight-text">50% des répondants ont 2 personnes au foyer. Le partage foyer est demandé par 50% — fonctionnalité différenciante à mettre en avant.</div>
+      </div>
+      <div class="insight blue">
+        <div class="insight-icon">💰</div>
+        <div class="insight-title">Le prix est le frein n°1</div>
+        <div class="insight-text">79% citent le prix. Seuls 14% accepteraient un abonnement. Un modèle freemium (21%) semble le bon compromis pour l'adoption initiale.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE INDIVIDUELLE -->
+  <div class="section">
+    <div class="section-title"><span class="num">7</span> Réponses individuelles</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Plateforme</th>
+            <th>Âge</th>
+            <th>Foyer</th>
+            <th>Intérêt /5</th>
+            <th>Connaissance loi</th>
+            <th>Conscience garantie</th>
+            <th>Conservation docs</th>
+            <th>Temps recherche</th>
+            <th>Garantie étendue</th>
+            <th>CB connue</th>
+            <th>Hors garantie</th>
+            <th>Freins</th>
+            <th>Tarification</th>
+            <th>Support souhaité</th>
+            <th>Priorité n°1</th>
+            <th>Commentaire</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- R1 -->
+          <tr>
+            <td>R1</td>
+            <td style="white-space:nowrap;font-size:11px;">18 mai<br>19h00</td>
+            <td><span class="badge badge-gray">Android</span></td>
+            <td>35–49</td>
+            <td>3–4</td>
+            <td>
+              <span class="stars">★★★★★</span>
+              <div style="font-size:10px;color:var(--ink-ghost);">5/5</div>
+            </td>
+            <td><span class="badge badge-gray">Peu connue</span></td>
+            <td><span class="badge badge-warm">Rarement</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Email</span><span class="tag">Drive</span></div></td>
+            <td><span class="badge badge-warm">Impossible</span></td>
+            <td><span class="badge badge-green">Oui — utilisée</span></td>
+            <td><span class="badge badge-gray">Non</span></td>
+            <td>Self-repair</td>
+            <td><div class="tags"><span class="tag hot">Prix</span><span class="tag hot">Vie privée</span></div></td>
+            <td><span class="badge badge-warm">Abonnement</span></td>
+            <td><div class="tags"><span class="tag">Android</span><span class="tag">Web</span></div></td>
+            <td><span class="prio-pill prio-1">Scan factures</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R2 -->
+          <tr>
+            <td>R2</td>
+            <td style="white-space:nowrap;font-size:11px;">18 mai<br>19h32</td>
+            <td><span class="badge badge-blue">Windows</span></td>
+            <td>50–64</td>
+            <td>2</td>
+            <td>
+              <span class="stars">★★★★★</span>
+              <div style="font-size:10px;color:var(--ink-ghost);">5/5</div>
+            </td>
+            <td><span class="badge badge-gray">Partielle</span></td>
+            <td><span class="badge badge-warm">Parfois</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Drive</span></div></td>
+            <td><span class="badge badge-gray">Quelques min</span></td>
+            <td><span class="badge badge-green">Oui — utilisée</span></td>
+            <td><span class="badge badge-warm">Vaguement</span></td>
+            <td>Répar. agréé</td>
+            <td><div class="tags"><span class="tag hot">Prix</span><span class="tag hot">Vie privée</span><span class="tag hot">Complexité</span></div></td>
+            <td><span class="badge badge-warm">Abonnement</span></td>
+            <td><div class="tags"><span class="tag">Android</span></div></td>
+            <td><span class="prio-pill prio-1">Scan factures</span></td>
+            <td class="comment-cell">« J'espère que l'app va plaire :-) »</td>
+          </tr>
+
+          <!-- R3 -->
+          <tr>
+            <td>R3</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>09h48</td>
+            <td><span class="badge badge-blue">Windows</span></td>
+            <td>25–34</td>
+            <td>1</td>
+            <td>
+              <span class="stars">★★★★★</span>
+              <div style="font-size:10px;color:var(--ink-ghost);">5/5</div>
+            </td>
+            <td><span class="badge badge-gray">Peu connue</span></td>
+            <td><span class="badge badge-warm">Jamais</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span></div></td>
+            <td><span class="badge badge-gray">Immédiat</span></td>
+            <td><span class="badge badge-gray">Non — oubli</span></td>
+            <td><span class="badge badge-gray">Non</span></td>
+            <td>Répar. tiers</td>
+            <td><div class="tags"><span class="tag hot">Vie privée</span><span class="tag hot">Complexité</span></div></td>
+            <td><span class="badge badge-green">Freemium</span></td>
+            <td><div class="tags"><span class="tag">iOS</span></div></td>
+            <td><span class="prio-pill prio-2">Alerte expir.</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R4 -->
+          <tr>
+            <td>R4</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>10h18</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>35–49</td>
+            <td>3–4</td>
+            <td>
+              <span class="stars">★★<span class="off">★★★</span></span>
+              <div style="font-size:10px;color:var(--ink-ghost);">2/5</div>
+            </td>
+            <td><span class="badge badge-gray">Peu connue</span></td>
+            <td><span class="badge badge-warm">Jamais</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span></div></td>
+            <td><span class="badge badge-gray">Quelques min</span></td>
+            <td><span class="badge badge-gray">Non — pas voulu</span></td>
+            <td><span class="badge badge-warm">Vaguement</span></td>
+            <td>Self-repair</td>
+            <td><div class="tags"><span class="tag hot">Prix</span></div></td>
+            <td><span class="badge badge-gray">Gratuit seul.</span></td>
+            <td><div class="tags"><span class="tag">iOS</span></div></td>
+            <td><span class="prio-pill prio-1">Scan factures</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R5 -->
+          <tr>
+            <td>R5</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>11h04</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>50–64</td>
+            <td>2</td>
+            <td>
+              <span class="stars">★★★★<span class="off">★</span></span>
+              <div style="font-size:10px;color:var(--ink-ghost);">4/5</div>
+            </td>
+            <td><span class="badge badge-gray">Partielle</span></td>
+            <td><span class="badge badge-warm">Rarement</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Drive</span></div></td>
+            <td><span class="badge badge-gray">Quelques min</span></td>
+            <td><span class="badge badge-green">Oui — utilisée</span></td>
+            <td><span class="badge badge-warm">Vaguement</span></td>
+            <td>Remplace</td>
+            <td><div class="tags"><span class="tag hot">Prix</span><span class="tag hot">Complexité</span></div></td>
+            <td><span class="badge badge-gray">Gratuit seul.</span></td>
+            <td><div class="tags"><span class="tag">iOS</span></div></td>
+            <td><span class="prio-pill prio-1">Scan factures</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R6 -->
+          <tr>
+            <td>R6</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>11h20</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>50–64</td>
+            <td>2</td>
+            <td>
+              <span class="stars">★★★★★</span>
+              <div style="font-size:10px;color:var(--ink-ghost);">5/5</div>
+            </td>
+            <td><span class="badge badge-gray">Peu connue</span></td>
+            <td><span class="badge badge-warm">Jamais</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Email</span></div></td>
+            <td><span class="badge badge-warm">Long</span></td>
+            <td><span class="badge badge-gray">Oui — non utilisée</span></td>
+            <td><span class="badge badge-gray">Non</span></td>
+            <td>Ça dépend</td>
+            <td><div class="tags"><span class="tag hot">Prix</span><span class="tag hot">Complexité</span></div></td>
+            <td><span class="badge badge-gray">Gratuit seul.</span></td>
+            <td><div class="tags"><span class="tag">iOS</span><span class="tag">Web</span></div></td>
+            <td><span class="prio-pill prio-1">Scan factures</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R7 -->
+          <tr>
+            <td>R7</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>11h22</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>18–24</td>
+            <td>2</td>
+            <td>
+              <span class="stars">★★★<span class="off">★★</span></span>
+              <div style="font-size:10px;color:var(--ink-ghost);">3/5</div>
+            </td>
+            <td><span class="badge badge-gray">Partielle</span></td>
+            <td><span class="badge badge-warm">Parfois</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Email</span><span class="tag">Rien</span></div></td>
+            <td><span class="badge badge-gray">Quelques min</span></td>
+            <td><span class="badge badge-gray">Non — oubli</span></td>
+            <td><span class="badge badge-warm">Vaguement</span></td>
+            <td>Ça dépend</td>
+            <td><div class="tags"><span class="tag hot">Prix</span><span class="tag hot">Habitudes</span></div></td>
+            <td><span class="badge badge-green">Freemium</span></td>
+            <td><div class="tags"><span class="tag">iOS</span></div></td>
+            <td><span class="prio-pill prio-3" style="background:#f3f3f3;color:#777;">Non renseigné</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R8 -->
+          <tr>
+            <td>R8</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>11h32</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>18–24</td>
+            <td>2</td>
+            <td>
+              <span class="stars">★★★★★</span>
+              <div style="font-size:10px;color:var(--ink-ghost);">5/5</div>
+            </td>
+            <td><span class="badge badge-green">Bien connue</span></td>
+            <td><span class="badge badge-warm">Parfois</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Email</span></div></td>
+            <td><span class="badge badge-warm">Long</span></td>
+            <td><span class="badge badge-gray">Oui — non utilisée</span></td>
+            <td><span class="badge badge-gray">Non utilisée</span></td>
+            <td>Self-repair</td>
+            <td><div class="tags"><span class="tag hot">Prix</span></div></td>
+            <td><span class="badge badge-gray">Gratuit seul.</span></td>
+            <td><div class="tags"><span class="tag">iOS</span></div></td>
+            <td><span class="prio-pill prio-2">Alerte expir.</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R9 -->
+          <tr>
+            <td>R9</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>12h00</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>50–64</td>
+            <td>2</td>
+            <td>
+              <span class="stars">★★<span class="off">★★★</span></span>
+              <div style="font-size:10px;color:var(--ink-ghost);">2/5</div>
+            </td>
+            <td><span class="badge badge-gray">Peu connue</span></td>
+            <td><span class="badge badge-warm">Jamais</span></td>
+            <td><div class="tags"><span class="tag">Email</span></div></td>
+            <td><span class="badge badge-warm">Long</span></td>
+            <td><span class="badge badge-gray">Non — oubli</span></td>
+            <td><span class="badge badge-warm">Vaguement</span></td>
+            <td>Ça dépend</td>
+            <td><div class="tags"><span class="tag hot">Prix</span><span class="tag hot">Complexité</span></div></td>
+            <td><span class="badge badge-gray">Gratuit seul.</span></td>
+            <td><div class="tags"><span class="tag">iOS</span></div></td>
+            <td><span class="prio-pill prio-2">Alerte expir.</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R10 -->
+          <tr>
+            <td>R10</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>12h16</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>50–64</td>
+            <td>2</td>
+            <td>
+              <span class="stars">★★★★★</span>
+              <div style="font-size:10px;color:var(--ink-ghost);">5/5</div>
+            </td>
+            <td><span class="badge badge-green">Bien connue</span></td>
+            <td><span class="badge badge-warm">Parfois</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Email</span></div></td>
+            <td><span class="badge badge-gray">Immédiat</span></td>
+            <td><span class="badge badge-gray">Oui — non utilisée</span></td>
+            <td><span class="badge badge-warm">Vaguement</span></td>
+            <td>Répar. agréé</td>
+            <td><div class="tags"><span class="tag hot">Vie privée</span></div></td>
+            <td><span class="badge badge-gray">Gratuit seul.</span></td>
+            <td><div class="tags"><span class="tag">iOS</span></div></td>
+            <td><span class="prio-pill prio-2">Alerte expir.</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R11 -->
+          <tr>
+            <td>R11</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>12h43</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>50–64</td>
+            <td>2</td>
+            <td>
+              <span class="stars">★<span class="off">★★★★</span></span>
+              <div style="font-size:10px;color:var(--ink-ghost);">1/5</div>
+            </td>
+            <td><span class="badge badge-gray">Peu connue</span></td>
+            <td><span class="badge badge-warm">Jamais</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Photos</span><span class="tag">Email</span><span class="tag">Rien</span></div></td>
+            <td><span class="badge badge-gray">Quelques min</span></td>
+            <td><span class="badge badge-gray">Non — oubli</span></td>
+            <td><span class="badge badge-gray">Non utilisée</span></td>
+            <td>Ça dépend</td>
+            <td><div class="tags"><span class="tag">Aucun</span></div></td>
+            <td><span class="badge badge-gray">Gratuit seul.</span></td>
+            <td><div class="tags"><span class="tag">iOS</span></div></td>
+            <td><span class="prio-pill prio-3">Dossier SAV</span></td>
+            <td class="comment-cell">« Pas intéressé »</td>
+          </tr>
+
+          <!-- R12 -->
+          <tr>
+            <td>R12</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>13h18</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>35–49</td>
+            <td>3–4</td>
+            <td>
+              <span class="stars">★★<span class="off">★★★</span></span>
+              <div style="font-size:10px;color:var(--ink-ghost);">2/5</div>
+            </td>
+            <td><span class="badge badge-gray">Partielle</span></td>
+            <td><span class="badge badge-warm">Jamais</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Photos</span><span class="tag">Email</span><span class="tag">Drive</span></div></td>
+            <td><span class="badge badge-warm">Long</span></td>
+            <td><span class="badge badge-gray">Non — pas voulu</span></td>
+            <td><span class="badge badge-warm">Vaguement</span></td>
+            <td>Self-repair</td>
+            <td><div class="tags"><span class="tag hot">Vie privée</span><span class="tag hot">Prix</span></div></td>
+            <td><span class="badge badge-gray">Gratuit seul.</span></td>
+            <td><div class="tags"><span class="tag">iOS</span></div></td>
+            <td><span class="prio-pill prio-3" style="background:#f3f3f3;color:#777;">Non renseigné</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R13 -->
+          <tr>
+            <td>R13</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>13h59</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>35–49</td>
+            <td>3–4</td>
+            <td>
+              <span class="stars">★★★<span class="off">★★</span></span>
+              <div style="font-size:10px;color:var(--ink-ghost);">3/5</div>
+            </td>
+            <td><span class="badge badge-gray">Peu connue</span></td>
+            <td><span class="badge badge-warm">Jamais</span></td>
+            <td><div class="tags"><span class="tag">Tiroir</span><span class="tag">Email</span><span class="tag">Rien</span></div></td>
+            <td><span class="badge badge-warm">Long</span></td>
+            <td><span class="badge badge-gray">Oui — non utilisée</span></td>
+            <td><span class="badge badge-gray">—</span></td>
+            <td>Self-repair</td>
+            <td><div class="tags"><span class="tag hot">Prix</span><span class="tag hot">Confiance</span></div></td>
+            <td><span class="badge badge-green">Freemium</span></td>
+            <td><div class="tags"><span class="tag">iOS</span><span class="tag">Web</span></div></td>
+            <td><span class="prio-pill prio-1">Scan factures</span></td>
+            <td class="comment-cell">—</td>
+          </tr>
+
+          <!-- R14 -->
+          <tr>
+            <td>R14</td>
+            <td style="white-space:nowrap;font-size:11px;">19 mai<br>15h39</td>
+            <td><span class="badge badge-blue">iPhone</span></td>
+            <td>35–49</td>
+            <td>5+</td>
+            <td>
+              <span class="stars">★★<span class="off">★★★</span></span>
+              <div style="font-size:10px;color:var(--ink-ghost);">2/5</div>
+            </td>
+            <td><span class="badge badge-gray">Peu connue</span></td>
+            <td><span class="badge badge-warm">Parfois</span></td>
+            <td><div class="tags"><span class="tag">Drive</span></div></td>
+            <td><span class="badge badge-gray">Immédiat</span></td>
+            <td><span class="badge badge-green">Oui — utilisée</span></td>
+            <td><span class="badge badge-warm">Vaguement</span></td>
+            <td>Ça dépend</td>
+            <td><div class="tags"><span class="tag hot">Prix</span><span class="tag hot">Complexité</span></div></td>
+            <td><span class="badge badge-gray">Gratuit seul.</span></td>
+            <td><div class="tags"><span class="tag">Web</span></div></td>
+            <td><span class="prio-pill prio-1">Scan factures</span></td>
+            <td class="comment-cell">« Comment former tout le foyer pour éviter les oublis ? »</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
